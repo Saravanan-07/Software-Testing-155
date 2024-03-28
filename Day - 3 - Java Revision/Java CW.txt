@@ -1,0 +1,203 @@
+Day 3 - Java Revision
+
+1)
+
+import java.util.Scanner;
+import java.util.ArrayList;
+import java.util.Iterator;
+class Cart
+{
+    private ArrayList<Items>l=new ArrayList<>();
+    public void addItem(Items a)
+    {
+        l.add(a);
+    }
+    public void removeItem(String a)
+    {
+        Iterator<Items>i=l.iterator();
+        while(i.hasNext())
+        {
+            if(i.next().name.equals(a))
+            {
+                i.remove();
+                break;
+            }
+        }
+    }
+    public double calculateTotalPrice()
+    {
+        double sum=0;
+        Iterator<Items>i=l.iterator();
+        while(i.hasNext())
+        {
+            sum+=i.next().price;
+        }
+        return sum;
+    }
+    
+}
+class Items
+{
+    String name;
+    double price;
+    Items(String a,double b)
+    {
+        name=a;
+        price=b;
+    }
+}
+class Main
+{
+    public static void main(String args[])
+    {
+        Scanner sc=new Scanner(System.in);
+        int n=sc.nextInt();
+        Cart obj1=new Cart();
+        for(int i=1;i<=n;i++)
+        {
+            sc.nextLine();
+            String a=sc.nextLine();
+            double b=sc.nextDouble();
+            Items obj2=new Items(a,b);
+            obj1.addItem(obj2);
+        }
+        
+        n=sc.nextInt();
+        sc.nextLine();
+        for(int i=1;i<=n;i++)
+        {
+            String a=sc.nextLine();
+            obj1.removeItem(a);
+        }
+        System.out.println("Total Price after removing items: $"+obj1.calculateTotalPrice());
+    }
+}
+
+
+
+
+2)
+
+import java.util.Scanner;
+class InsufficientBalanceException extends Exception
+{
+    InsufficientBalanceException(String a)
+    {
+        super(a);
+    }
+}
+class Main extends Exception
+{
+    public static void main(String args[]){
+        Scanner sc=new Scanner(System.in);
+        try
+        {
+            double a=sc.nextDouble(),b=sc.nextDouble();
+            if(b>a)
+                throw new InsufficientBalanceException("Insufficient balance: Insufficient balance to perform the withdrawal.");
+            System.out.print("Transaction successful.");
+        }
+        catch(Exception e)
+        {
+            System.out.println(e.getMessage());
+        }
+    }
+}
+
+
+
+
+3)
+
+import java.sql.*;
+import java.util.Scanner;
+class Main
+{
+    public static void main(String args[]) throws Exception
+    {
+        Scanner sc=new Scanner(System.in);
+        String DB_URL="jdbc:mysql://localhost/ri_db";
+        String USER="test";
+        String PWD="test123";
+        String sql;
+        
+        Class.forName("com.mysql.jdbc.Driver");
+        Connection con=DriverManager.getConnection(DB_URL,USER,PWD);
+        PreparedStatement st;
+        
+        int n=sc.nextInt();
+        if(n==1)
+        {
+            sql="INSERT INTO customer values (?,?,?,?,?);";
+            st=con.prepareStatement(sql);
+            st.setInt(1,sc.nextInt());
+            sc.nextLine();
+            st.setString(2,sc.nextLine());
+            st.setString(3,sc.nextLine());
+            st.setString(4,sc.nextLine());
+            st.setString(5,sc.nextLine());
+            st.executeUpdate();
+            System.out.println("Customer record inserted successfully.");
+        }
+        else if(n==2)
+        {
+            sql="UPDATE customer SET name=?, contact_information=?, subscription_plan=?, payment_history=? WHERE customer_id=?";
+            st=con.prepareStatement(sql);
+            st.setInt(5,sc.nextInt());
+            sc.nextLine();
+            st.setString(1,sc.nextLine());
+            st.setString(2,sc.nextLine());
+            st.setString(3,sc.nextLine());
+            st.setString(4,sc.nextLine());
+            st.executeUpdate();
+            System.out.println("Customer record updated successfully.");
+        }
+        else if(n>3)
+        {
+            System.out.println("Invalid operation number. Please try again.");
+            return;
+        }
+        sql="Select * from customer";
+        st=con.prepareStatement(sql);
+        ResultSet rs=st.executeQuery(sql);
+        
+        while(rs.next())
+        {
+            System.out.println("ID: "+rs.getInt(1)+", Name: "+rs.getString(2)+", Contact Information: "+rs.getString(3)+", Subscription Plan: "+rs.getString(4)+", Payment History: "+rs.getString(5));
+        }
+        st.close();
+        con.close();
+    }
+}
+
+
+
+
+4)
+
+import java.sql.*;
+import java.util.Scanner;
+class Main
+{
+    public static void main(String args[]) throws Exception
+    {
+        Scanner sc=new Scanner(System.in);
+        String DB_URL="jdbc:mysql://localhost/ri_db";
+        String USER="test";
+        String PWD="test123";
+        String sql="Select lower(Department_Name) from department";
+        
+        Class.forName("com.mysql.jdbc.Driver");
+        Connection con=DriverManager.getConnection(DB_URL,USER,PWD);
+        PreparedStatement st=con.prepareStatement(sql);
+        
+        ResultSet rs=st.executeQuery(sql);
+        
+        while(rs.next())
+        {
+            System.out.println(rs.getString(1));
+        }
+        st.close();
+        con.close();
+    }
+}
